@@ -1,0 +1,166 @@
+package Mentor;
+
+import Mentor.stringValidation;
+import java.util.Scanner;
+
+public class Calculator2 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        String[] parts = input.split(" ");
+        scanner.close();
+        
+        if (StringValidation.main(parts)) {
+            boolean areRomeNums;
+            int firstNum, secondNum;
+            
+            if (Convert.romeConvert(parts[0]) == -1) {
+                areRomeNums = false;
+                firstNum = Integer.valueOf(parts[0]);
+                secondNum = Integer.valueOf(parts[2]);
+            } else {
+                areRomeNums = true;
+                firstNum = Convert.romeConvert(parts[0]);
+                secondNum = Convert.romeConvert(parts[2]);
+            }
+            
+            double answer = 0;
+            if (parts[1].equals("+")) {
+                answer = firstNum + secondNum;
+            } else if (parts[1].equals("-")) {
+                answer = firstNum - secondNum;
+            } else if (parts[1].equals("*")) {
+                answer = firstNum * secondNum;
+            } else if (parts[1].equals("/")) {
+                answer = Double.valueOf(firstNum) / secondNum;
+            }
+            
+            if (!areRomeNums) {
+                if (answer % 1 == 0) {
+                    System.out.println((int) answer);
+                } else {
+                    System.out.println(answer);
+                }
+            } else {
+                if (answer % 1 != 0) {
+                    System.out.println("Sorry, but I don't support fractional roman numbers :(");
+                } else {
+                    System.out.println(
+                    Convert.arabConvert((int)(answer)));
+                }
+            }   
+        }
+    }
+}
+
+class StringValidation {
+    public static boolean main(String[] parts) {
+    StringValidation stringValidation = new StringValidation();
+     
+    if (!stringValidation.lenCheck(parts)) {
+        try {
+            throw new Exception("Invalid input format");
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }           
+    };
+     
+    if (!stringValidation.validNumsCheck(parts[0], parts[2])) {
+        try {
+            throw new Exception("Invalid numbers");
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+    };
+    
+    if (!stringValidation.validSignCheck(parts[1])) {
+        try {
+            throw new Exception("Invalid sign");
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+    };
+    
+    return true;
+    }
+    
+    private boolean lenCheck(String[] array) {
+        return array.length == 3;
+    }
+    
+    private boolean validNumsCheck(String firstNum, String secondNum) {
+        if (Convert.romeConvert(firstNum) == -1 ||
+        Convert.romeConvert(secondNum) == -1) {
+            try {
+                 Double.valueOf(firstNum);
+                 Double.valueOf(secondNum);
+            } catch (NumberFormatException e) {
+                 return false;
+            } 
+            double firstN = Double.valueOf(firstNum);
+            double secondN = Double.valueOf(secondNum);
+            
+            if (firstN % 1 != 0 || secondN % 1 != 0) {
+                return false;
+            }
+        }
+          
+        return true;     
+    }
+    
+    private boolean validSignCheck(String sign) {
+        return (sign.equals("+") || sign.equals("-") 
+        || sign.equals("*") || sign.equals("/"));
+    }
+}
+
+class Convert {
+    public static int romeConvert(String romeNum) {
+        String[] romeArr = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+        
+        for (int i = 0; i < romeArr.length; i++) {
+            if (romeNum.equals(romeArr[i])) {
+                return i+1;
+            }
+        }
+        return -1;
+    }
+    
+    public static String arabConvert(int arabNum) {
+        String romeNum = "";
+        
+        if (arabNum == 100) {
+             return "C";
+        }
+        while (arabNum >= 90) {
+             romeNum += "XC";
+             arabNum -= 90;
+        } while (arabNum >= 50) {
+             romeNum += "L";
+             arabNum -= 50;
+        } while (arabNum >= 40) {
+             romeNum += "XL";
+             arabNum -= 40;
+        } while (arabNum >= 10) {
+             romeNum += "X";
+             arabNum -= 10;
+        } while (arabNum >= 9) {
+             romeNum += "IX";
+             arabNum -= 9;
+        } while (arabNum >= 5) {
+             romeNum += "V";
+             arabNum -= 5;
+        } while (arabNum >= 4) {
+             romeNum += "IV";
+             arabNum -= 4;
+        } while (arabNum >= 1) {
+             romeNum += "I";
+             arabNum -= 1;
+        }
+         
+        return romeNum;
+    }
+}
